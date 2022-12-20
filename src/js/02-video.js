@@ -13,17 +13,7 @@ const onPlay = ({ seconds }) => {
 player.on('timeupdate', throttle(onPlay, 1000));
 
 const getSeconds = () => {
-  return localStorage.getItem(STORAGE_KEY);
+  return localStorage.getItem(STORAGE_KEY) || 0;
 };
 
-player
-  .setCurrentTime(getSeconds())
-  .then()
-  .catch(function (error) {
-    switch (error.name) {
-      case 'RangeError':
-        break;
-      default:
-        break;
-    }
-  });
+player.setCurrentTime(getSeconds());
