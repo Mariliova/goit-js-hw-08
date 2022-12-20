@@ -36,8 +36,12 @@ function onFormSubmit(e) {
 
 function populateInfo() {
   if (localStorage.getItem(STORAGE_KEY)) {
-    const infoFromLocalStorage = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    refs.email.value = infoFromLocalStorage?.email;
-    refs.message.value = infoFromLocalStorage?.message;
+    const { email, message } = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    if (email) {
+      refs.email.value = email;
+    }
+    if (message) {
+      refs.message.value = message;
+    }
   }
 }
