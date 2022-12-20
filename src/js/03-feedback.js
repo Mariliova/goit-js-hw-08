@@ -16,9 +16,13 @@ refs.form.addEventListener('submit', onFormSubmit);
 
 function onFormInput(e) {
   if (localStorage.getItem(STORAGE_KEY)) {
-    const infoFromLocalStorage = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    formData.email = infoFromLocalStorage?.email;
-    formData.message = infoFromLocalStorage?.message;
+    const { email, message } = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    if (email) {
+      formData.email = email;
+    }
+    if (message) {
+      formData.message = message;
+    }
   }
   formData[e.target.name] = e.target.value;
   localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
