@@ -9,7 +9,8 @@ const player = new Player(iframe);
 
 player.on('timeupdate', throttle(onPlay, 1000));
 
-player.setCurrentTime(() => localStorageApi.load(STORAGE_KEY) || 0);
+const currentTime = () => localStorageApi.load(STORAGE_KEY) || 0;
+player.setCurrentTime(currentTime());
 
 function onPlay({ seconds }) {
   localStorageApi.save(STORAGE_KEY, seconds);
