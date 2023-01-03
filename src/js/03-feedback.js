@@ -1,11 +1,10 @@
 import throttle from 'lodash.throttle';
+import localStorageApi from './local-storage-api';
 
 const STORAGE_KEY = 'feedback-form-state';
 
 const refs = {
   form: document.querySelector('.feedback-form'),
-  email: document.querySelector('[name="email"]'),
-  message: document.querySelector('[name="message"]'),
 };
 
 populateInfo();
@@ -13,32 +12,32 @@ populateInfo();
 refs.form.addEventListener('input', throttle(onFormInput, 500));
 refs.form.addEventListener('submit', onFormSubmit);
 
-function onFormInput() {
-  const formInfo = formData();
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(formInfo));
+function onFormInput({ target }) {
+  const { name, value } = target;
+  const userInfo = localStorageApi.load(STORAGE_KEY) ?? {};
+
+  userInfo[name] = value;
+  localStorageApi.save(STORAGE_KEY, userInfo);
 }
 
 function onFormSubmit(e) {
   e.preventDefault();
-  if (localStorage.getItem(STORAGE_KEY)) {
-    localStorage.removeItem(STORAGE_KEY);
-  }
-  const formInfo = formData();
-  console.log(formInfo);
-  e.currentTarget.reset();
-}
+  const { currentTarget: form } = e;
+  const formData = new FormData(form);
+  const userInfo = {};
 
-function formData() {
-  const formData = new FormData(refs.form);
-  const formInfo = {};
-  formData.forEach((value, name) => (formInfo[name] = value));
-  return formInfo;
+  formData.forEach((value, key) => (userInfo[key] = value));
+  console.log(userInfo);
+  localStorageApi.remove(STORAGE_KEY);
+  form.reset();
 }
 
 function populateInfo() {
-  if (localStorage.getItem(STORAGE_KEY)) {
-    const { email, message } = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    refs.email.value = email;
-    refs.message.value = message;
+  const savedData = localStorageApi.load(STORAGE_KEY);
+  if (!savedData) {
+    return;
   }
+  Object.entries(savedData).forEach(
+    ([name, value]) => (refs.form.elements[name].value = value)
+  );
 }
